@@ -27,10 +27,10 @@
 
 <h1>*Friends</h1>
 <% @friends.each do |friend| %>
-  <h3><%= User.where(id: friend.user_request_receiver_id).first.f_name %></h3>
+  <h3><%= link_to User.where(id: friend.user_request_receiver_id).first.f_name, user_show_path(User.where(id: friend.user_request_receiver_id).first.id) %></h3>
 <% end %>
 <% @friends2.each do |friend| %>
-  <h3><%= User.where(id: friend.user_request_sender_id).first.f_name %></h3>
+  <h3><%= link_to User.where(id: friend.user_request_sender_id).first.f_name, user_show_path(User.where(id: friend.user_request_sender_id).first.id) %></h3>
 <% end %>
 
 <h1>*Requests coming</h1>
