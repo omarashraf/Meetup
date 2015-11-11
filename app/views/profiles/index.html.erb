@@ -18,6 +18,11 @@
     by
     <%= User.where(id: post.user_sender_id).first.f_name %>
   </h3>
+  <% @result.each do |result| %>
+    <% if result["post_id"] == post.id %>
+      <h5> --> <%= Comment.where(id: result["comment_id"]).first.content %></h5>
+    <% end %>
+  <% end %>
 <% end %>
 
 <h1>*Friends</h1>
@@ -37,3 +42,5 @@
 <% @requests_pending.each do |request| %>
   <h3><%= User.where(id: request.user_request_receiver_id).first.f_name %> --> still pending..</h3>
 <% end %>
+
+

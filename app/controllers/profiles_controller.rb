@@ -7,5 +7,8 @@ class ProfilesController < ApplicationController
   	@friends2 = Friendship.where(user_request_receiver_id: 3, accept: true)
   	@requests = Friendship.where(user_request_receiver_id: 3, accept: nil)
   	@requests_pending = Friendship.where(user_request_sender_id: 3, accept: nil)
+  	sql = "SELECT * FROM comments_users_and_posts WHERE post_id = 3"
+  	@result = ActiveRecord::Base.connection.execute(sql)
+  	@result.to_a
   end
 end
