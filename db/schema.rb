@@ -72,16 +72,6 @@ ActiveRecord::Schema.define(version: 20151115144625) do
   add_index "friendships", ["user_request_receiver_id"], name: "index_friendships_on_user_request_receiver_id"
   add_index "friendships", ["user_request_sender_id"], name: "index_friendships_on_user_request_sender_id"
 
-  create_table "members", force: true do |t|
-    t.integer  "community_id"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "members", ["community_id"], name: "index_members_on_community_id"
-  add_index "members", ["user_id"], name: "index_members_on_user_id"
-
   create_table "posts", force: true do |t|
     t.integer  "user_sender_id"
     t.integer  "user_receiver_id"
