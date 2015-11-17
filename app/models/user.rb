@@ -20,6 +20,8 @@ class User < ActiveRecord::Base
   scope :male, -> { where(gender: "Male") }
   scope :female, -> { where(gender: "Female") }
 
+  before_save -> { puts 'Saved Successfully!' }
+
   def year_of_birth_is_valid
     self.errors.add(:year_of_birth, 'invalid') unless self.year_of_birth <= Date.today.year
   end
