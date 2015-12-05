@@ -1,4 +1,34 @@
 Rails.application.routes.draw do
+  get 'posts/new'
+
+  get 'posts/index'
+
+  get 'posts/edit'
+
+  get 'posts/delete'
+
+  get 'posts/show/:id' => 'posts#show', as: 'post_show'
+
+  get 'events/index'
+
+  get 'events/new'
+
+  get 'events/edit'
+
+  get 'events/delete'
+
+  get 'events/show/:id' => 'events#show', as: 'event_show'
+
+  get 'communities/index'
+
+  get 'communities/show/:id' => 'communities#show', as: 'community_show'
+
+  get 'communities/delete'
+
+  get 'communities/edit'
+
+  get 'communities/new'
+
   get 'profiles/index'
 
   get 'users/index'
@@ -10,6 +40,30 @@ Rails.application.routes.draw do
   get 'users/edit'
 
   get 'users/show/:id' => 'users#show', as: 'user_show'
+
+  post 'communities/show/:id' => 'communities#show'
+
+  post 'events/show/:id' => 'events#show'
+
+  post 'posts/show/:id' => 'posts#show'
+
+  post 'communities/:community_id/posts/:id' => 'posts#show'
+
+  post 'events/:event_id/posts/:id' => 'posts#show'
+
+  post 'users/show/:id' => 'users#show'
+
+  resources :communities do
+    resources :posts
+  end
+  
+  get 'communities/:community_id/posts/:id' => 'posts#show', as: 'communities_post'
+
+  resources :events do
+    resources :posts
+  end
+
+  get 'events/:community_id/posts/:id' => 'posts#show', as: 'events_post'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

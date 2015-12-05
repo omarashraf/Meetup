@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151115165925) do
+ActiveRecord::Schema.define(version: 20151129191126) do
 
   create_table "comments", force: true do |t|
     t.datetime "created_at"
@@ -50,6 +50,16 @@ ActiveRecord::Schema.define(version: 20151115165925) do
 
   add_index "community_events", ["community_id"], name: "index_community_events_on_community_id"
   add_index "community_events", ["event_id"], name: "index_community_events_on_event_id"
+
+  create_table "event_members", force: true do |t|
+    t.integer  "event_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "event_members", ["event_id"], name: "index_event_members_on_event_id"
+  add_index "event_members", ["user_id"], name: "index_event_members_on_user_id"
 
   create_table "events", force: true do |t|
     t.string   "eventName"

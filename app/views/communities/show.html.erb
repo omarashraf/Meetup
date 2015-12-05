@@ -1,0 +1,22 @@
+<h1><%= Community.where(id: params[:id]).first.comName %></h1>
+<p><%= Community.where(id: params[:id]).first.description %></p>
+
+<h1>Posts</h1>
+<%= form_for :post do |f| %>
+	<%= f.text_area :post_content %><br />
+	<%= f.submit "Post" %>
+<% end %>
+<% @posts.each do |post| %>
+	<h3><%= link_to post.content, communities_post_path(params[:id], post.id) %> by <%= link_to User.where(id: post.user_sender_id).first.f_name, user_show_path(post.user_sender_id) %></h3>
+<% end %>
+
+<h1>Events</h1>
+<% @events_communities.each do |event| %>
+	<h3><%= link_to Event.where(id: event["event_id"]).first.eventName, event_show_path(event["event_id"]) %></h3>
+<% end %>
+
+<h1>Members</h1>
+<% @members.each do |member| %>
+	<h3><%= link_to User.where(id: member.user_id).first.f_name, user_show_path(member.user_id) %></h3>
+<% end %>
+

@@ -1,0 +1,16 @@
+<h1>
+	<%= User.find(Post.find(params[:id]).user_sender_id).f_name %> posted 
+	<% if Post.find(params[:id]).user_receiver_id != nil %>
+		on <%= User.find(Post.find(params[:id]).user_receiver_id).f_name %>'s timeline: 
+	<% end %>
+</h1>
+<p><%= Post.find(params[:id]).content %></p>
+
+<h1>Comments</h1>
+<%= form_for :comment do |f| %>
+	<%= f.text_area :comment_content %><br />
+	<%= f.submit "Comment" %>
+<% end %>
+<% @post_comments.each do |comment| %>
+		<h4><%= Comment.where(id: comment["comment_id"]).first.content %> by <%= link_to User.find(comment["user_id"]).f_name, user_show_path(comment["user_id"]) %></h4>
+<% end %>
