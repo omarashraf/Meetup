@@ -1,69 +1,89 @@
 Rails.application.routes.draw do
-  get 'posts/new'
 
-  get 'posts/index'
+  get 'comments/new'
 
-  get 'posts/edit'
+  get 'comments/create'
 
-  get 'posts/delete'
+  resources :communities, except: [:edit, :update, :destroy]
 
-  get 'posts/show/:id' => 'posts#show', as: 'post_show'
+  resources :events, except: [:edit, :update, :destroy]
 
-  get 'events/index'
+  resources :posts, only: [:show]
 
-  get 'events/new'
+  resources :users, except: [:index, :edit, :update, :destroy]
 
-  get 'events/edit'
+  resources :comments, only: [:new]
 
-  get 'events/delete'
+  get 'communities/:community_id/new_post' => 'posts#new_comm', :as => 'comm_new_post'
+  post 'communities/:community_id/new_post' => 'posts#create_comm', :as => 'comm_post'
 
-  get 'events/show/:id' => 'events#show', as: 'event_show'
+  get 'events/:event_id/new_post' => 'posts#new_event', :as => 'event_new_post'
+  post 'events/:event_id/new_post' => 'posts#create_event', :as => 'event_post'
 
-  get 'communities/index'
+  get 'users/:user_id/new_post' => 'posts#new_user', :as => 'user_new_post'
+  post 'users/:user_id/new_post' => 'posts#create_user', :as => 'user_post'
 
-  get 'communities/show/:id' => 'communities#show', as: 'community_show'
+  post 'communities/:community_id/join' => 'communities#join_community', :as => 'join_community'
+  post 'communities/:community_id/leave' => 'communities#leave_community', :as => 'leave_community'
 
-  get 'communities/delete'
+  post 'events/:event_id/going' => 'events#rsvp_going', :as => 'rsvp_going'
+  post 'events/:event_id/not_going' => 'events#rsvp_notGoing', :as => 'rsvp_notGoing'
 
-  get 'communities/edit'
+  post 'users/:user_id/add_friend' => 'users#add_friend', :as => 'add_friend'
+  post 'users/:user_id/remove_friend' => 'users#remove_friend', :as => 'remove_friend'
 
-  get 'communities/new'
+  post '/users/:user_id/accept_request/:request_id' => 'users#accept_request', :as => 'accept_request'
+  post '/users/:user_id/reject_request/:request_id' => 'users#reject_request', :as => 'reject_request'
 
-  get 'profiles/index'
+  get '/users/:user_id/requests/' => 'users#requests', :as => 'requests'
 
-  get 'users/index'
+  post '/posts/:id/' => 'comments#create', :as => 'create_comment'
 
-  get 'users/new'
+  # Facebook
+  get 'auth/:provider/callback', to: 'sessions#create'
+  #get 'logout', to: 'sessions#destroy'
 
-  get 'users/delete'
+  post 'login/create' => 'login#create'
+  get 'logout' => 'login#destroy'
 
-  get 'users/edit'
+  get 'login/login' => 'login#login'
 
-  get 'users/show/:id' => 'users#show', as: 'user_show'
+  root 'login#login'
 
-  post 'communities/show/:id' => 'communities#show'
+  # ///////////////////////////////////////////////////////////////
 
-  post 'events/show/:id' => 'events#show'
+  # API
+  namespace :api, defaults: { format: :json } do
+    resources :comments, only: :create
 
-  post 'posts/show/:id' => 'posts#show'
+    resources :communities, except: [:new, :edit]
 
-  post 'communities/:community_id/posts/:id' => 'posts#show'
+    resources :events, only: [:index, :show, :create]
 
-  post 'events/:event_id/posts/:id' => 'posts#show'
+    resources :posts, only: [:show]
 
-  post 'users/show/:id' => 'users#show'
+    resources :users, only: [:index, :show, :create]
 
-  resources :communities do
-    resources :posts
+    post 'events/:event_id/going' => 'events#rsvp_going', :as => 'rsvp_going'
+    post 'events/:event_id/not_going' => 'events#rsvp_notGoing', :as => 'rsvp_notGoing'
+
+    post 'login/create' => 'login#create'
+    get 'logout' => 'login#destroy'
+    get 'login/login' => 'login#login'
+
+    post 'communities/:community_id/new_post' => 'posts#create_comm', :as => 'comm_post'
+    post 'events/:event_id/new_post' => 'posts#create_event', :as => 'event_post'
+    post 'users/:user_id/new_post' => 'posts#create_user', :as => 'user_post'
+
+    post 'communities/:community_id/join' => 'communities#join_community', :as => 'join_community'
+    post 'communities/:community_id/leave' => 'communities#leave_community', :as => 'leave_community'
+
+    post 'users/:user_id/add_friend' => 'users#add_friend', :as => 'add_friend'
+    post 'users/:user_id/remove_friend' => 'users#remove_friend', :as => 'remove_friend'
+    post '/users/:user_id/accept_request/:request_id' => 'users#accept_request', :as => 'accept_request'
+    post '/users/:user_id/reject_request/:request_id' => 'users#reject_request', :as => 'reject_request'
+    get '/users/:user_id/requests/' => 'users#requests', :as => 'requests'
   end
-  
-  get 'communities/:community_id/posts/:id' => 'posts#show', as: 'communities_post'
-
-  resources :events do
-    resources :posts
-  end
-
-  get 'events/:community_id/posts/:id' => 'posts#show', as: 'events_post'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

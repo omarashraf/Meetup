@@ -1,0 +1,51 @@
+%h1= @event.eventName
+
+- if isGoing?(@event.id, current_user.id)
+	<button disabled>Going</button>
+	= form_for :event, url: rsvp_notGoing_path(@event) do |f|
+		= f.submit 'Not Going'
+
+- elsif isNotGoing?(@event.id, current_user.id)
+	= form_for :event, url: rsvp_going_path(@event) do |f|
+		= f.submit 'Going'
+	<button disabled>Not Going</button>
+
+- else
+	= form_for :event, url: rsvp_going_path(@event) do |f|
+		= f.submit 'Going'
+	= form_for :event, url: rsvp_notGoing_path(@event) do |f|
+		= f.submit 'Not Going'
+
+%br/
+- user = User.find_by(id: @event.user_id)
+- if user.present?
+	%b Host:
+	= link_to user.f_name + ' ' + user.l_name, user_path(user)
+
+%h2 Going
+%table
+	%tr
+		%th Name
+
+	- @rsvp_going.each do |g|
+		%tr
+			%td= link_to g.f_name + ' ' + g.l_name, user_path(g)
+
+%h2 Not Going
+%table
+	%tr
+		%th Name
+
+	- @rsvp_notGoing.each do |n|
+		%tr
+			%td= link_to n.f_name + ' ' + n.l_name, user_path(n)
+
+%h2 Posts
+
+= link_to 'Add post', event_new_post_path(@event)
+
+- @posts.each do |p|
+	- user = User.find_by(id: p.user_sender_id)
+	%h5= link_to user.f_name + ' ' + user.l_name, user_path(user)
+	%p= p.content
+	= link_to 'Add Comment', post_path(p)

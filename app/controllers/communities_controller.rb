@@ -1,35 +1,86 @@
 class CommunitiesController < ApplicationController
   def index
+    @communities = Community.all
   end
 
   def show
-    @posts = Post.where(community_id: params[:id])
-    sql_events_communities = "SELECT * FROM community_events where community_id = #{params[:id]}"
-    @events_communities = ActiveRecord::Base.connection.execute(sql_events_communities)
-    @members = Member.where(community_id: params[:id])
+    @community = Community.find(params[:id])
 
-    unless params[:post].nil?
-      @post_new = Post.new(content: params[:post][:post_content], community_id: params[:id], user_sender_id: 3, user_receiver_id: nil)
+    # All posts in this community
+    @posts = Post.where(community_id: @community.id).order(created_at: :desc)
+
+    # All events of this community
+    tmp_events = CommunityEvent.where(community_id: @community.id)
+    @events = []
+    tmp_events.each do |e|
+      @events += [Event.find_by(id: e.event_id)]
     end
 
-    if @post_new != nil
-      if @post_new.save!
-        redirect_to community_show_path(params[:id])
-      else
-        #display error message
-        render plain: "Fail"
-      end
+    # All members of this community
+    tmp_users = Member.where(community_id: @community.id)
+    @members = []
+    tmp_users.each do |u|
+      @members += [User.find_by(id: u.user_id)]
     end
-
-  end
-
-  def delete
-  end
-
-  def edit
   end
 
   def new
+    @community = Community.new
   end
 
+  def create
+    @community = Community.new(comm_params)
+
+    @community.user_id = current_user.id
+
+    if @community.save
+      @member = @community.members.build(user: current_user)
+      @member.save
+      redirect_to @community
+    else
+      render 'new'
+    end
+  end
+
+  def edit
+    @Community = Community.find(params[:id])
+  end
+
+  def update
+    @community = Commnity.find(params[:id])
+
+    if @community.update(comm_params)
+      redirect_to @community
+    else
+      render 'edit'
+    end
+  end
+
+  def destroy
+    @community = Community.find(params[:id])
+    @community.destroy
+
+    redirect_to communities_path
+  end
+
+  def join_community
+    @community = Community.find(params[:community_id])
+    @member = @community.members.build(user: current_user)
+    @member.save
+
+    redirect_to @community
+  end
+
+  def leave_community
+    @community = Community.find(params[:community_id])
+    @member = Member.where(user_id: current_user.id, community_id: @community.id)
+    @member.first.destroy
+
+    redirect_to @community
+  end
+
+  protected
+  def comm_params
+    params.require(:community).permit(:comName, :description)
+  end
 end

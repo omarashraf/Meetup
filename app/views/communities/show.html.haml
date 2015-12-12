@@ -1,0 +1,43 @@
+%h1= @community.comName
+
+- if isMember?(@community.id, current_user.id)
+	<button disabled>Join</button>
+	= form_for :community, url: leave_community_path(@community) do |f|
+		= f.submit 'Leave'
+- else
+	= form_for :community, url: join_community_path(@community) do |f|
+		= f.submit 'Join'
+
+%br/
+- user = User.find_by(id: @community.user_id)
+= if user.present?
+	%b Admin:
+	= link_to user.f_name + ' ' + user.l_name, user_path(user)
+
+%h2 Members
+%table
+	%tr
+		%th Name
+
+	- @members.each do |m|
+		%tr
+			%td= link_to m.f_name + ' ' + m.l_name, user_path(m)
+
+%h2 Events
+%table
+	%tr
+		%th Name
+
+	- @events.each do |e|
+		%tr
+			%td= link_to e.eventName, event_path(e)
+
+%h2 Posts
+
+= link_to 'Add post', comm_new_post_path(@community)
+
+- @posts.each do |p|
+	- user = User.find_by(id: p.user_sender_id)
+	%h5= link_to user.f_name + ' ' + user.l_name, user_path(user)
+	%p= p.content
+	= link_to 'Add Comment', post_path(p)

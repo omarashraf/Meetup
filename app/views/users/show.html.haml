@@ -1,0 +1,8 @@
+- if current_user.id == @user.id
+  = render partial: 'myProfile'
+
+- elsif request_pending?(current_user.id, @user.id) || no_request?(current_user.id, @user.id)
+  = render partial: 'limitedProfile'
+
+- elsif friends?(current_user.id, @user.id)
+  = render partial: 'friendProfile'

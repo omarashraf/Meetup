@@ -1,0 +1,5 @@
+- if flash.present?
+  %p
+    - flash.each do |type, message|
+      %strong= type.titleize
+      = message

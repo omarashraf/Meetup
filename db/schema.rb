@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151129191126) do
+ActiveRecord::Schema.define(version: 20151212161146) do
 
   create_table "comments", force: true do |t|
     t.datetime "created_at"
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 20151129191126) do
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "rsvp"
   end
 
   add_index "event_members", ["event_id"], name: "index_event_members_on_event_id"
@@ -67,8 +68,10 @@ ActiveRecord::Schema.define(version: 20151129191126) do
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "community_id"
   end
 
+  add_index "events", ["community_id"], name: "index_events_on_community_id"
   add_index "events", ["user_id"], name: "index_events_on_user_id"
 
   create_table "friendships", force: true do |t|
@@ -111,11 +114,22 @@ ActiveRecord::Schema.define(version: 20151129191126) do
     t.text     "f_name"
     t.text     "l_name"
     t.text     "location"
-    t.integer  "year_of_birth"
     t.text     "gender"
     t.text     "profile_picture"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "provider"
+    t.string   "uid"
+    t.string   "token"
+    t.datetime "expires_at"
+    t.string   "email"
+    t.string   "password"
+    t.integer  "day"
+    t.integer  "month"
+    t.integer  "year"
+    t.string   "fb_token"
   end
+
+  add_index "users", ["email"], name: "index_users_on_email", unique: true
 
 end

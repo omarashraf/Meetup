@@ -1,0 +1,20 @@
+%h1= @user.f_name + ' ' + @user.l_name
+
+%b Location:
+= @user.location
+%br/
+
+%b Gender:
+= @user.gender
+%br/
+
+%b Birth date:
+= "#{@user.day}/#{@user.month}/#{@user.year}"
+%br/
+
+- if no_request?(current_user.id, @user.id)
+  = form_for :user, url: add_friend_path(@user) do |f|
+    = f.submit 'Add Friend'
+
+- if request_pending?(current_user.id, @user.id)
+  <button disabled>Add Friend</button>

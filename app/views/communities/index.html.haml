@@ -1,0 +1,10 @@
+%h1 Communities
+
+%table
+  %tr
+    %th Name
+
+  - @communities.each do |comm|
+    %tr
+      %td= comm.comName
+      %td= link_to 'Show', community_path(comm)
