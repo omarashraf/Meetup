@@ -1,0 +1,53 @@
+%h1= @user.f_name + ' ' + @user.l_name
+
+%b Location:
+= @user.location
+%br/
+
+%b Gender:
+= @user.gender
+%br/
+
+%b Birth date:
+= "#{@user.day}/#{@user.month}/#{@user.year}"
+%br/
+
+= form_for :user, url: remove_friend_path(@user) do |f|
+  = f.submit 'Remove Friend'
+
+%h2= "#{@user.f_name}'s Friends"
+%table
+  %tr
+    %th Name
+
+  - @friends.each do |fr|
+    %tr
+      %td= link_to fr.f_name + ' ' + fr.l_name, user_path(fr)
+
+%h2= "#{@user.f_name}'s Posts"
+
+= link_to 'Add post', user_new_post_path(@user)
+
+- @posts.each do |p|
+  - user = User.find_by(id: p.user_sender_id)
+  %h5= link_to user.f_name + ' ' + user.l_name, user_path(user)
+  %p= p.content
+  = link_to 'Add Comment', post_path(p)
+
+%h2= "#{@user.f_name}'s Communities"
+%table
+  %tr
+    %th Name
+
+  - @communities.each do |c|
+    %tr
+      %td= link_to c.comName, community_path(c)
+
+%h2= "#{@user.f_name}'s My Events"
+%table
+  %tr
+    %th Name
+
+  - @events.each do |e|
+    %tr
+      %td= link_to e.eventName, event_path(e)

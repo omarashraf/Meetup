@@ -1,0 +1,16 @@
+%h2= "#{@sender.f_name} #{@sender.l_name}:"
+%p= @post.content
+
+= form_for :comment, url: create_comment_path do |f|
+  = f.label :content, 'Content'
+  = f.text_area :content
+  %br/
+
+  = f.submit 'Comment'
+
+%h2 Comments
+- @comments.each do |c|
+  - user = User.find_by(id: c['user_id'])
+  - comment = Comment.find_by(id: c['comment_id'])
+  %h5= link_to user.f_name + ' ' + user.l_name, user_path(user)
+  %p= comment.content

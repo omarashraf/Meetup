@@ -1,0 +1,16 @@
+%h1 Requests
+
+%table
+  %tr
+    %th Name
+
+  - @requests.each do |r|
+    %tr
+      - user = User.find_by(id: r.user_request_sender_id)
+      %td= link_to user.f_name + ' ' + user.l_name, user_path(user)
+      %td
+        = form_for :friendship, url: accept_request_path(current_user, r) do |f|
+          = f.submit 'Accept'
+      %td
+        = form_for :friendship, url: reject_request_path(current_user, r) do |f|
+          = f.submit 'Reject'

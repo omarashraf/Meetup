@@ -1,31 +1,85 @@
 class EventsController < ApplicationController
   def index
-  end
-
-  def new
-  end
-
-  def edit
-  end
-
-  def delete
+    @events = Event.all
   end
 
   def show
-    @posts = Post.where(event_id: params[:id])
-    sql_event_members = "SELECT * FROM event_members WHERE event_id = #{params[:id]}"
-    @event_members = ActiveRecord::Base.connection.execute(sql_event_members)
-    unless params[:post].nil?
-      @post_new = Post.new(content: params[:post][:post_content], event_id: params[:id], user_sender_id: 3, user_receiver_id: nil)
+    @event = Event.find(params[:id])
+
+    # All posts in this event
+    @posts = Post.where(event_id: @event.id).order(created_at: :desc)
+
+    # All RSVPees to this event
+    sql_event_members_going = "SELECT * FROM event_members WHERE event_id = #{@event.id} AND rsvp = 1"
+    tmp_users_going = ActiveRecord::Base.connection.execute(sql_event_members_going)
+    @rsvp_going = []
+    tmp_users_going.each do |u|
+      @rsvp_going += [User.find_by(id: u['user_id'])]
     end
 
-    if @post_new != nil
-      if @post_new.save!
-        redirect_to event_show_path(params[:id])
-      else
-        #display error message
-        render plain: "Fail"
-      end
+    sql_event_members_notGoing = "SELECT * FROM event_members WHERE event_id = #{@event.id} AND rsvp = 0"
+    tmp_users_notGoing = ActiveRecord::Base.connection.execute(sql_event_members_notGoing)
+    @rsvp_notGoing = []
+    tmp_users_notGoing.each do |u|
+      @rsvp_notGoing += [User.find_by(id: u['user_id'])]
     end
+  end
+
+  def new
+    @event = Event.new
+  end
+
+  def create
+    @event = Event.new(ev_params)
+
+    @event.user_id = current_user.id
+
+    if params[:event][:community_id] == "- Select a category -"
+			#@forum.category = nil
+			params[:event][:community_id] = nil
+		end
+
+    if @event.save
+      sql_event_members = "INSERT INTO event_members (event_id, user_id, rsvp) VALUES (#{@event.id}, #{current_user.id}, 1)"
+      tmp_users = ActiveRecord::Base.connection.execute(sql_event_members)
+      redirect_to @event
+    else
+      render 'new'
+    end
+  end
+
+  def rsvp_going
+    @event = Event.find(params[:event_id])
+    userId = current_user.id
+
+    if isNotGoing?(@event.id, userId)
+      sql = "DELETE FROM event_members WHERE user_id = #{userId}"
+      execute = ActiveRecord::Base.connection.execute(sql)
+    end
+
+    sql_event_members = "INSERT INTO event_members (event_id, user_id, rsvp) VALUES (#{@event.id}, #{userId}, 1)"
+    tmp_users = ActiveRecord::Base.connection.execute(sql_event_members)
+
+    redirect_to @event
+  end
+
+  def rsvp_notGoing
+    @event = Event.find(params[:event_id])
+    userId = current_user.id
+
+    if isGoing?(@event.id, userId)
+      sql = "DELETE FROM event_members WHERE user_id = #{userId}"
+      execute = ActiveRecord::Base.connection.execute(sql)
+    end
+
+    sql_event_members = "INSERT INTO event_members (event_id, user_id, rsvp) VALUES (#{@event.id}, #{userId}, 0)"
+    tmp_users = ActiveRecord::Base.connection.execute(sql_event_members)
+
+    redirect_to @event
+  end
+
+  protected
+  def ev_params
+    params.require(:event).permit(:eventName, :description, :community_id)
   end
 end
